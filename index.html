@@ -280,7 +280,7 @@ var SYSTEM_PROMPT = [
 var state = {};
 BASIC.concat(ADVANCED).forEach(function(f){ state[f.key] = f.def; });
 var lastResult = "";
-var history = [];
+var histList = [];
 var loading = false;
 
 /* ============ 工具函数 ============ */
@@ -427,10 +427,10 @@ function setTools(on){
   $("copyAll").disabled = !on; $("copyPrompt").disabled = !on; $("downloadMd").disabled = !on;
 }
 function renderHistory(){
-  if(!history.length){ $("history").classList.add("hidden"); return; }
+  if(!histList.length){ $("history").classList.add("hidden"); return; }
   $("history").classList.remove("hidden");
   var list=$("historyList"); list.innerHTML="";
-  history.forEach(function(h){
+  histList.forEach(function(h){
     var b=document.createElement("button"); b.className="history-item";
     b.innerHTML='<span class="history-title">'+esc(h.title)+'</span><span class="history-plat">'+esc(h.platform)+'</span>';
     b.onclick=function(){ lastResult=h.md; showResult(h.md); setTools(true); };
@@ -474,8 +474,8 @@ async function generate(){
     if(!text) throw new Error("模型返回为空，请重试");
     lastResult = text;
     showResult(text); setTools(true);
-    history.unshift({ id:Date.now(), title:content, platform:state.platform, md:text });
-    history = history.slice(0,12);
+    histList.unshift({ id:Date.now(), title:content, platform:state.platform, md:text });
+    histList = histList.slice(0,12);
     renderHistory();
   }catch(e){
     showError("生成没成功："+(e.message||"网络波动")+"，稍等再点一次。");
